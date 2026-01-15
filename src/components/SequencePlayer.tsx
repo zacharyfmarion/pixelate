@@ -7,6 +7,10 @@ export function SequencePlayer() {
   const currentFrameIndex = useAppStore((s) => s.currentFrameIndex);
   const setCurrentFrame = useAppStore((s) => s.setCurrentFrame);
   const clearFrames = useAppStore((s) => s.clearFrames);
+  const getProcessedImageData = useAppStore((s) => s.getProcessedImageData);
+  const getOriginalImageData = useAppStore((s) => s.getOriginalImageData);
+  // Subscribe to processedVersion to re-render when images are processed
+  useAppStore((s) => s.processedVersion);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [fps, setFps] = useState(10);
@@ -82,19 +86,22 @@ export function SequencePlayer() {
       )}
 
       <div className="flex gap-1 overflow-x-auto py-1">
-        {frames.map((frame, index) => (
-          <button
-            key={frame.id}
-            onClick={() => setCurrentFrame(index)}
-            className={`flex-shrink-0 w-12 h-12 rounded border-2 transition-colors overflow-hidden ${
-              index === currentFrameIndex
-                ? 'border-indigo-500'
-                : 'border-gray-600 hover:border-gray-500'
-            }`}
-          >
-            <FrameThumbnail imageData={frame.processed || frame.original} />
-          </button>
-        ))}
+        {frames.map((frame, index) => {
+          const imageData = getProcessedImageData(frame.id) || getOriginalImageData(frame.id);
+          return (
+            <button
+              key={frame.id}
+              onClick={() => setCurrentFrame(index)}
+              className={`flex-shrink-0 w-12 h-12 rounded border-2 transition-colors overflow-hidden ${
+                index === currentFrameIndex
+                  ? 'border-indigo-500'
+                  : 'border-gray-600 hover:border-gray-500'
+              }`}
+            >
+              {imageData && <FrameThumbnail imageData={imageData} />}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

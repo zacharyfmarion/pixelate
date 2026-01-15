@@ -5,6 +5,7 @@ export function DitheringControls() {
   const dithering = useAppStore((s) => s.processingParams.dithering);
   const updateDithering = useAppStore((s) => s.updateDithering);
   const hasPalette = useAppStore((s) => s.palette.length > 0);
+  const isProcessing = useAppStore((s) => s.isProcessing);
 
   if (!hasPalette) {
     return (
@@ -22,6 +23,7 @@ export function DitheringControls() {
         label="Enable"
         checked={dithering.enabled}
         onChange={(enabled) => updateDithering({ enabled })}
+        disabled={isProcessing}
       />
       {dithering.enabled && (
         <>
@@ -34,6 +36,7 @@ export function DitheringControls() {
               { value: '8', label: '8x8' },
             ]}
             onChange={(value) => updateDithering({ matrixSize: Number(value) as 2 | 4 | 8 })}
+            disabled={isProcessing}
           />
           <Slider
             label="Strength"
@@ -43,6 +46,7 @@ export function DitheringControls() {
             step={0.05}
             onChange={(strength) => updateDithering({ strength })}
             valueFormatter={(v) => `${Math.round(v * 100)}%`}
+            disabled={isProcessing}
           />
         </>
       )}

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useAppStore } from '../store/appStore';
+import { cancelProcessing } from '../lib/processing/workerProcessor';
 
 export function useImageProcessor() {
   const frames = useAppStore((s) => s.frames);
@@ -16,10 +17,15 @@ export function useImageProcessor() {
       clearTimeout(debounceRef.current);
     }
 
+    // Cancel any in-flight processing when params change
+    // (the worker wrapper will ignore stale responses)
+
     // Debounce processing to avoid excessive computation
     debounceRef.current = setTimeout(() => {
       if (frames.length > 0) {
-        processCurrentFrame();
+        // processCurrentFrame is async but we don't await it here
+        // The store handles the async flow internally
+        void processCurrentFrame();
       }
     }, 50);
 
@@ -29,14 +35,17 @@ export function useImageProcessor() {
       }
     };
   }, [
-    processingParams.pixelation.enabled,
-    processingParams.pixelation.blockSize,
-    processingParams.dithering.enabled,
-    processingParams.dithering.matrixSize,
-    processingParams.dithering.strength,
+    processingParams,
     palette,
     currentFrameIndex,
     frames.length,
     processCurrentFrame,
   ]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      cancelProcessing();
+    };
+  }, []);
 }

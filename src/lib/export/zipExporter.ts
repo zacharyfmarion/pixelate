@@ -1,14 +1,21 @@
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
-import type { ImageFrame } from '../../types';
+
+export interface FrameRef {
+  id: string;
+  width: number;
+  height: number;
+}
 
 export interface ZipExportOptions {
   onProgress?: (progress: number) => void;
+  getProcessedImageData: (id: string) => ImageData | undefined;
+  getOriginalImageData: (id: string) => ImageData | undefined;
 }
 
 export async function exportToZip(
-  frames: ImageFrame[],
-  options: ZipExportOptions = {}
+  frames: FrameRef[],
+  options: ZipExportOptions
 ): Promise<void> {
   if (frames.length === 0) {
     throw new Error('No frames to export');
@@ -31,7 +38,9 @@ export async function exportToZip(
 
   for (let i = 0; i < frames.length; i++) {
     const frame = frames[i];
-    const imageData = frame.processed || frame.original;
+    const imageData = options.getProcessedImageData(frame.id) || options.getOriginalImageData(frame.id);
+
+    if (!imageData) continue;
 
     canvas.width = imageData.width;
     canvas.height = imageData.height;

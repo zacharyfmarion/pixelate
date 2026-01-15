@@ -3,8 +3,11 @@ import { Button } from './ui';
 
 export function PaletteDisplay() {
   const palette = useAppStore((s) => s.palette);
-  const removePaletteColor = useAppStore((s) => s.removePaletteColor);
   const setPalette = useAppStore((s) => s.setPalette);
+
+  const removePaletteColor = (index: number) => {
+    setPalette(palette.filter((_, i) => i !== index));
+  };
 
   if (palette.length === 0) {
     return (

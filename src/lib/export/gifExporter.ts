@@ -1,15 +1,22 @@
 import GIF from 'gif.js';
-import type { ImageFrame } from '../../types';
+
+export interface FrameRef {
+  id: string;
+  width: number;
+  height: number;
+}
 
 export interface GifExportOptions {
   delay: number;
   loop: boolean;
   quality: number;
   onProgress?: (progress: number) => void;
+  getProcessedImageData: (id: string) => ImageData | undefined;
+  getOriginalImageData: (id: string) => ImageData | undefined;
 }
 
 export function exportToGif(
-  frames: ImageFrame[],
+  frames: FrameRef[],
   options: GifExportOptions
 ): Promise<Blob> {
   return new Promise((resolve, reject) => {
@@ -18,21 +25,27 @@ export function exportToGif(
       return;
     }
 
-    const firstFrame = frames[0].processed || frames[0].original;
+    const firstFrame = frames[0];
+    const firstImageData = options.getProcessedImageData(firstFrame.id) || options.getOriginalImageData(firstFrame.id);
+
+    if (!firstImageData) {
+      reject(new Error('No image data for first frame'));
+      return;
+    }
 
     const gif = new GIF({
       workers: 2,
       quality: options.quality,
-      width: firstFrame.width,
-      height: firstFrame.height,
+      width: firstImageData.width,
+      height: firstImageData.height,
       workerScript: '/gif.worker.js',
       repeat: options.loop ? 0 : -1,
     });
 
     // Create canvas for rendering frames
     const canvas = document.createElement('canvas');
-    canvas.width = firstFrame.width;
-    canvas.height = firstFrame.height;
+    canvas.width = firstImageData.width;
+    canvas.height = firstImageData.height;
     const ctx = canvas.getContext('2d');
 
     if (!ctx) {
@@ -42,9 +55,11 @@ export function exportToGif(
 
     // Add each frame
     for (const frame of frames) {
-      const imageData = frame.processed || frame.original;
-      ctx.putImageData(imageData, 0, 0);
-      gif.addFrame(ctx, { copy: true, delay: options.delay });
+      const imageData = options.getProcessedImageData(frame.id) || options.getOriginalImageData(frame.id);
+      if (imageData) {
+        ctx.putImageData(imageData, 0, 0);
+        gif.addFrame(ctx, { copy: true, delay: options.delay });
+      }
     }
 
     gif.on('progress', (p: number) => {

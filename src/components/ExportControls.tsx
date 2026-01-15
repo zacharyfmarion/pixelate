@@ -13,6 +13,8 @@ export function ExportControls() {
   const setIsExporting = useAppStore((s) => s.setIsExporting);
   const setExportProgress = useAppStore((s) => s.setExportProgress);
   const processAllFrames = useAppStore((s) => s.processAllFrames);
+  const getOriginalImageData = useAppStore((s) => s.getOriginalImageData);
+  const getProcessedImageData = useAppStore((s) => s.getProcessedImageData);
 
   const handleExport = useCallback(async () => {
     if (frames.length === 0) return;
@@ -30,11 +32,15 @@ export function ExportControls() {
           loop: exportSettings.gifLoop,
           quality: exportSettings.quality,
           onProgress: setExportProgress,
+          getProcessedImageData,
+          getOriginalImageData,
         });
         saveAs(blob, 'pixelated.gif');
       } else {
         await exportToZip(frames, {
           onProgress: setExportProgress,
+          getProcessedImageData,
+          getOriginalImageData,
         });
       }
     } catch (error) {
@@ -43,7 +49,7 @@ export function ExportControls() {
       setIsExporting(false);
       setExportProgress(0);
     }
-  }, [frames, exportSettings, processAllFrames, setIsExporting, setExportProgress]);
+  }, [frames, exportSettings, processAllFrames, setIsExporting, setExportProgress, getProcessedImageData, getOriginalImageData]);
 
   if (frames.length === 0) {
     return null;

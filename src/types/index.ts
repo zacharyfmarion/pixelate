@@ -13,7 +13,15 @@ export interface ImageFrame {
   height: number;
 }
 
+export interface AdjustmentParams {
+  brightness: number;
+  contrast: number;
+  saturation: number;
+  hue: number;
+}
+
 export interface ProcessingParams {
+  adjustments: AdjustmentParams;
   pixelation: {
     enabled: boolean;
     blockSize: number;
