@@ -195,9 +195,7 @@ export const useAppStore = create<AppState & AppActions>()((set, get) => ({
         palette: state.palette,
       });
 
-      // Store in cache, not in zustand state
       imageCache.processed.set(frame.id, processed);
-      // Bump version to trigger re-render in components that need it
       set(state => ({ isProcessing: false, processedVersion: state.processedVersion + 1 }));
     } catch (error) {
       if ((error as Error).message !== 'Processing cancelled') {

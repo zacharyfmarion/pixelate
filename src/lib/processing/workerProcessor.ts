@@ -92,18 +92,13 @@ export function processImageAsync(options: ProcessOptions): Promise<ImageData> {
     pendingResolve = resolve;
     pendingReject = reject;
 
-    // Use setTimeout to allow the UI to update before we start the buffer copy
-    // This prevents the page from appearing frozen during the copy
+    // Use setTimeout to batch rapid parameter changes
     setTimeout(() => {
-      // Check if this request is still current
       if (thisRequestId !== currentRequestId) {
         return;
       }
 
       const w = getWorker();
-
-      // Copy the image data buffer for transfer
-      // This is necessary because we can't transfer the original buffer
       const buffer = imageData.data.buffer.slice(0);
 
       const request: ProcessRequest = {
@@ -116,7 +111,6 @@ export function processImageAsync(options: ProcessOptions): Promise<ImageData> {
         palette,
       };
 
-      // Transfer the buffer to the worker (zero-copy after the initial copy)
       w.postMessage(request, [buffer]);
     }, 0);
   });

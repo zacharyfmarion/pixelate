@@ -24,14 +24,9 @@ export function PreviewCanvas() {
   const getOriginalImageData = useAppStore((s) => s.getOriginalImageData);
   const getProcessedImageData = useAppStore((s) => s.getProcessedImageData);
   // Subscribe to processedVersion to re-render when images are processed
-  useAppStore((s) => s.processedVersion);
+  const processedVersion = useAppStore((s) => s.processedVersion);
 
   const currentFrame = frames[currentFrameIndex];
-  const imageData = currentFrame
-    ? showOriginal
-      ? getOriginalImageData(currentFrame.id)
-      : getProcessedImageData(currentFrame.id) || getOriginalImageData(currentFrame.id)
-    : null;
 
   // Track container size
   useEffect(() => {
@@ -54,7 +49,7 @@ export function PreviewCanvas() {
 
   // Calculate the effective zoom level
   const getEffectiveZoom = useCallback(() => {
-    if (!imageData) return 1;
+    if (!currentFrame) return 1;
     if (zoom !== FIT_ZOOM) return zoom;
 
     // Calculate fit zoom
@@ -64,18 +59,25 @@ export function PreviewCanvas() {
 
     if (availableWidth <= 0 || availableHeight <= 0) return 1;
 
-    const scaleX = availableWidth / imageData.width;
-    const scaleY = availableHeight / imageData.height;
+    const scaleX = availableWidth / currentFrame.width;
+    const scaleY = availableHeight / currentFrame.height;
 
     return Math.min(scaleX, scaleY, 1);
-  }, [zoom, containerSize, imageData]);
+  }, [zoom, containerSize, currentFrame]);
 
   const effectiveZoom = getEffectiveZoom();
 
-  // Draw the image - only when imageData changes
+  // Draw the image - fetch ImageData inside the effect to avoid passing through React
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas || !imageData) return;
+    if (!canvas || !currentFrame) return;
+
+    // Get image data inside the effect, not during render
+    const imageData = showOriginal
+      ? getOriginalImageData(currentFrame.id)
+      : getProcessedImageData(currentFrame.id) || getOriginalImageData(currentFrame.id);
+
+    if (!imageData) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -87,7 +89,7 @@ export function PreviewCanvas() {
     }
 
     ctx.putImageData(imageData, 0, 0);
-  }, [imageData]);
+  }, [currentFrame, showOriginal, processedVersion, getOriginalImageData, getProcessedImageData]);
 
   // Reset zoom when frame changes
   useEffect(() => {
@@ -97,7 +99,7 @@ export function PreviewCanvas() {
   // Non-passive wheel event listener to properly prevent browser zoom
   useEffect(() => {
     const container = scrollContainerRef.current;
-    if (!container || !imageData) return;
+    if (!container || !currentFrame) return;
 
     const handleWheel = (e: WheelEvent) => {
       // Pinch-to-zoom sends wheel events with ctrlKey=true
@@ -115,8 +117,8 @@ export function PreviewCanvas() {
                 const availableWidth = containerSize.width - padding;
                 const availableHeight = containerSize.height - padding;
                 if (availableWidth <= 0 || availableHeight <= 0) return 1;
-                const scaleX = availableWidth / imageData.width;
-                const scaleY = availableHeight / imageData.height;
+                const scaleX = availableWidth / currentFrame.width;
+                const scaleY = availableHeight / currentFrame.height;
                 return Math.min(scaleX, scaleY, 1);
               })()
             : currentZoom;
@@ -128,7 +130,7 @@ export function PreviewCanvas() {
 
     container.addEventListener('wheel', handleWheel, { passive: false });
     return () => container.removeEventListener('wheel', handleWheel);
-  }, [containerSize, imageData]);
+  }, [containerSize, currentFrame]);
 
   const handleZoomIn = useCallback(() => {
     setZoom((currentZoom) => {
