@@ -91,10 +91,6 @@ export function PreviewCanvas() {
     ctx.putImageData(imageData, 0, 0);
   }, [currentFrame, showOriginal, processedVersion, getOriginalImageData, getProcessedImageData]);
 
-  // Reset zoom when frame changes
-  useEffect(() => {
-    setZoom(FIT_ZOOM);
-  }, [currentFrameIndex]);
 
   // Non-passive wheel event listener to properly prevent browser zoom
   useEffect(() => {

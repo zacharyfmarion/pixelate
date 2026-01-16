@@ -6,13 +6,28 @@ interface PresetPalette {
   id: string;
   name: string;
   file: string;
+  previewColors: string[];
 }
 
 const PRESET_PALETTES: PresetPalette[] = [
-  { id: 'cozy-64', name: 'Cozy 64', file: '/palettes/cozy-palette-64.png' },
-  { id: 'resurrect-64', name: 'Resurrect 64', file: '/palettes/resurrect-64-1x.png' },
-  { id: 'slso8', name: 'SLSO8', file: '/palettes/slso8-1x.png' },
-  { id: 'twilight-5', name: 'Twilight 5', file: '/palettes/twilight-5-1x.png' },
+  {
+    id: 'resurrect-64',
+    name: 'Resurrect 64',
+    file: '/palettes/resurrect-64-1x.png',
+    previewColors: ['#2e222f', '#3e3546', '#625565', '#966c6c', '#ab947a', '#694f62', '#7f708a', '#9babb2', '#c7dcd0', '#ffffff'],
+  },
+  {
+    id: 'slso8',
+    name: 'SLSO8',
+    file: '/palettes/slso8-1x.png',
+    previewColors: ['#0d2b45', '#203c56', '#544e68', '#8d697a', '#d08159', '#ffaa5e', '#ffd4a3', '#ffecd6'],
+  },
+  {
+    id: 'twilight-5',
+    name: 'Twilight 5',
+    file: '/palettes/twilight-5-1x.png',
+    previewColors: ['#fbbbad', '#ee8695', '#4a7a96', '#333f58', '#292831'],
+  },
 ];
 
 export function PresetPalettes() {
@@ -58,19 +73,30 @@ export function PresetPalettes() {
   return (
     <div className="space-y-2">
       <label className="text-xs text-gray-400">Preset Palettes</label>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 gap-2">
         {PRESET_PALETTES.map((preset) => (
           <button
             key={preset.id}
             onClick={() => loadPalette(preset)}
             disabled={loading !== null}
-            className={`px-3 py-2 text-xs rounded-lg border transition-colors text-left ${
+            className={`p-2 rounded-lg border transition-colors text-left ${
               selectedId === preset.id
-                ? 'border-indigo-500 bg-indigo-500/20 text-indigo-300'
-                : 'border-gray-600 bg-gray-800 text-gray-300 hover:border-gray-500 hover:bg-gray-700'
+                ? 'border-indigo-500 bg-indigo-500/20'
+                : 'border-gray-600 bg-gray-800 hover:border-gray-500 hover:bg-gray-700'
             } ${loading === preset.id ? 'opacity-50' : ''}`}
           >
-            {loading === preset.id ? 'Loading...' : preset.name}
+            <div className="text-xs text-gray-300 mb-1.5">
+              {loading === preset.id ? 'Loading...' : preset.name}
+            </div>
+            <div className="flex h-4 rounded overflow-hidden">
+              {preset.previewColors.map((color, i) => (
+                <div
+                  key={i}
+                  className="flex-1 h-full"
+                  style={{ backgroundColor: color }}
+                />
+              ))}
+            </div>
           </button>
         ))}
       </div>
