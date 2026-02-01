@@ -141,8 +141,8 @@ function hslToRgb(h: number, s: number, l: number): [number, number, number] {
 
 function applyAdjustments(
   data: Uint8ClampedArray,
-  width: number,
-  height: number,
+  _width: number,
+  _height: number,
   brightness: number,
   contrast: number,
   saturation: number,
@@ -272,7 +272,7 @@ function getBayerMatrix(size: 2 | 4 | 8): Float32Array {
 function applyBayerDithering(
   data: Uint8ClampedArray,
   width: number,
-  height: number,
+  _height: number,
   matrixSize: 2 | 4 | 8,
   strength: number,
   blockSize: number,
@@ -341,8 +341,8 @@ function applyBayerDithering(
 
 function quantizeToPalette(
   data: Uint8ClampedArray,
-  width: number,
-  height: number,
+  _width: number,
+  _height: number,
   lut: ColorLUT
 ): Uint8ClampedArray {
   const output = new Uint8ClampedArray(data.length);
@@ -405,7 +405,8 @@ self.onmessage = (e: MessageEvent<ProcessRequest>) => {
   const { requestId, imageBuffer, width, height, params, palette } = e.data;
 
   // Convert ArrayBuffer to Uint8ClampedArray
-  let data = new Uint8ClampedArray(imageBuffer);
+  // Use explicit type to allow reassignment from functions returning Uint8ClampedArray
+  let data: Uint8ClampedArray = new Uint8ClampedArray(imageBuffer);
 
   // Step 1: Adjustments
   data = applyAdjustments(
@@ -444,13 +445,14 @@ self.onmessage = (e: MessageEvent<ProcessRequest>) => {
   }
 
   // Transfer the buffer back (zero-copy)
+  const outputBuffer = data.buffer as ArrayBuffer;
   const response: ProcessResponse = {
     type: 'result',
     requestId,
-    imageBuffer: data.buffer,
+    imageBuffer: outputBuffer,
     width,
     height,
   };
 
-  self.postMessage(response, [data.buffer]);
+  self.postMessage(response, { transfer: [outputBuffer] });
 };
