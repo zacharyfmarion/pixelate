@@ -48,7 +48,7 @@ export function exportToGif(
       quality: options.quality,
       width: outputWidth,
       height: outputHeight,
-      workerScript: '/gif.worker.js',
+      workerScript: `${import.meta.env.BASE_URL}gif.worker.js`,
       repeat: options.loop ? 0 : -1,
     });
 

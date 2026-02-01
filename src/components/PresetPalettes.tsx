@@ -13,19 +13,19 @@ const PRESET_PALETTES: PresetPalette[] = [
   {
     id: 'resurrect-64',
     name: 'Resurrect 64',
-    file: '/palettes/resurrect-64-1x.png',
+    file: 'palettes/resurrect-64-1x.png',
     previewColors: ['#2e222f', '#3e3546', '#625565', '#966c6c', '#ab947a', '#694f62', '#7f708a', '#9babb2', '#c7dcd0', '#ffffff'],
   },
   {
     id: 'slso8',
     name: 'SLSO8',
-    file: '/palettes/slso8-1x.png',
+    file: 'palettes/slso8-1x.png',
     previewColors: ['#0d2b45', '#203c56', '#544e68', '#8d697a', '#d08159', '#ffaa5e', '#ffd4a3', '#ffecd6'],
   },
   {
     id: 'twilight-5',
     name: 'Twilight 5',
-    file: '/palettes/twilight-5-1x.png',
+    file: 'palettes/twilight-5-1x.png',
     previewColors: ['#fbbbad', '#ee8695', '#4a7a96', '#333f58', '#292831'],
   },
 ];
@@ -43,7 +43,7 @@ export function PresetPalettes() {
   const loadPalette = async (preset: PresetPalette) => {
     setLoading(preset.id);
     try {
-      const response = await fetch(preset.file);
+      const response = await fetch(`${import.meta.env.BASE_URL}${preset.file}`);
       const blob = await response.blob();
 
       const img = new Image();
