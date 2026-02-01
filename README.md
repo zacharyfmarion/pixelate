@@ -23,8 +23,7 @@ A browser-based image processing tool for applying pixelation, dithering, and co
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (v18 or higher)
-- [Yarn](https://yarnpkg.com/) (v4.x) or [npm](https://www.npmjs.com/)
+- [Bun](https://bun.sh/) (v1.0 or higher)
 
 ### Installation
 
@@ -34,10 +33,10 @@ git clone https://github.com/zacharyfmarion/pixelate.git
 cd pixelate
 
 # Install dependencies
-yarn install
+bun install
 
 # Start the development server
-yarn dev
+bun dev
 ```
 
 The app will be available at `http://localhost:5173`.
@@ -45,7 +44,7 @@ The app will be available at `http://localhost:5173`.
 ### Building for Production
 
 ```bash
-yarn build
+bun run build
 ```
 
 The built files will be in the `dist` directory.
@@ -66,6 +65,7 @@ The built files will be in the `dist` directory.
 - [React 19](https://react.dev/) - UI framework
 - [TypeScript](https://www.typescriptlang.org/) - Type safety
 - [Vite](https://vitejs.dev/) - Build tool
+- [Bun](https://bun.sh/) - JavaScript runtime & package manager
 - [Tailwind CSS](https://tailwindcss.com/) - Styling
 - [Zustand](https://zustand-demo.pmnd.rs/) - State management
 - [Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) - Background image processing
