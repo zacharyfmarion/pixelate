@@ -11,7 +11,7 @@ A browser-based image processing tool for applying pixelation, dithering, and co
 ## Features
 
 - **Image Upload**: Drag and drop or click to upload images
-- **Color Palettes**: Choose from preset palettes or upload your own color strip
+- **Color Palettes**: Choose from preset palettes or upload your own color strip (find more at [Lospec](https://lospec.com/palette-list))
 - **Pixelation**: Adjustable pixel size for different retro effects
 - **Dithering**: Multiple dithering algorithms (Floyd-Steinberg, Ordered, etc.)
 - **Adjustments**: Brightness, contrast, and saturation controls

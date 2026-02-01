@@ -116,6 +116,16 @@ export function PresetPalettes() {
           </div>
         </button>
       ))}
+
+      {/* Lospec link */}
+      <a
+        href="https://lospec.com/palette-list"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block text-center text-[10px] text-[#5c5c8a] hover:text-[#a89cc8] transition-colors mt-2"
+      >
+        Find more palettes at Lospec →
+      </a>
     </div>
   );
 }
