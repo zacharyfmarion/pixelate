@@ -2,6 +2,8 @@
 
 A browser-based image processing tool for applying pixelation, dithering, and color palette effects to images. Create retro-style pixel art from any image with real-time preview and export capabilities.
 
+> **Built for [Pixel Forecast](https://apps.apple.com/us/app/pixel-forecast/id6758243523)** - This tool was created to generate the pixel art assets for my iOS weather app that brings weather to life with stunning pixel art animations.
+
 ![Pixelate](https://img.shields.io/badge/Made%20with-React-61DAFB?style=flat-square&logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)
