@@ -6,6 +6,8 @@ A browser-based image processing tool for applying pixelation, dithering, and co
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)
 
+![Pixelate Screenshot](screenshot.png)
+
 ## Features
 
 - **Image Upload**: Drag and drop or click to upload images
