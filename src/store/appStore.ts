@@ -7,6 +7,8 @@ import { processImageAsync } from '../lib/processing/workerProcessor';
 const imageCache = {
   original: new Map<string, ImageData>(),
   processed: new Map<string, ImageData>(),
+  // Track which paramsVersion each frame was processed with
+  processedWithVersion: new Map<string, number>(),
 };
 
 export interface FrameRef {
@@ -27,6 +29,8 @@ interface AppState {
   exportProgress: number;
   // Version counter to trigger re-renders when processed images change
   processedVersion: number;
+  // Version counter that increments when processing params or palette change
+  paramsVersion: number;
 }
 
 interface AppActions {
@@ -81,10 +85,12 @@ export const useAppStore = create<AppState & AppActions>()((set, get) => ({
     gifDelay: 100,
     gifLoop: true,
     quality: 10,
+    exportAtPixelSize: false,
   },
   isExporting: false,
   exportProgress: 0,
   processedVersion: 0,
+  paramsVersion: 0,
 
   // Frame actions
   addFrames: (newFrames) => {
@@ -107,6 +113,7 @@ export const useAppStore = create<AppState & AppActions>()((set, get) => ({
   removeFrame: (id) => {
     imageCache.original.delete(id);
     imageCache.processed.delete(id);
+    imageCache.processedWithVersion.delete(id);
     set(state => {
       const newFrames = state.frames.filter(f => f.id !== id);
       return {
@@ -121,6 +128,7 @@ export const useAppStore = create<AppState & AppActions>()((set, get) => ({
   clearFrames: () => {
     imageCache.original.clear();
     imageCache.processed.clear();
+    imageCache.processedWithVersion.clear();
     set({ frames: [], currentFrameIndex: 0 });
   },
 
@@ -130,18 +138,23 @@ export const useAppStore = create<AppState & AppActions>()((set, get) => ({
   setColorStrip: (imageData) => {
     if (imageData) {
       const colors = extractPaletteFromStrip(imageData);
-      set({ palette: colors });
+      // Increment paramsVersion when palette changes
+      set(state => ({ palette: colors, paramsVersion: state.paramsVersion + 1 }));
     }
   },
 
-  setPalette: (colors) => set({ palette: colors }),
+  setPalette: (colors) => set(state => ({ 
+    palette: colors, 
+    paramsVersion: state.paramsVersion + 1 
+  })),
 
-  // Processing param actions (simple object spread, no immer)
+  // Processing param actions - increment paramsVersion on changes
   updateAdjustments: (params) => set(state => ({
     processingParams: {
       ...state.processingParams,
       adjustments: { ...state.processingParams.adjustments, ...params },
     },
+    paramsVersion: state.paramsVersion + 1,
   })),
 
   resetAdjustments: () => set(state => ({
@@ -149,6 +162,7 @@ export const useAppStore = create<AppState & AppActions>()((set, get) => ({
       ...state.processingParams,
       adjustments: { ...initialAdjustments },
     },
+    paramsVersion: state.paramsVersion + 1,
   })),
 
   updatePixelation: (params) => set(state => ({
@@ -156,6 +170,7 @@ export const useAppStore = create<AppState & AppActions>()((set, get) => ({
       ...state.processingParams,
       pixelation: { ...state.processingParams.pixelation, ...params },
     },
+    paramsVersion: state.paramsVersion + 1,
   })),
 
   updateDithering: (params) => set(state => ({
@@ -163,6 +178,7 @@ export const useAppStore = create<AppState & AppActions>()((set, get) => ({
       ...state.processingParams,
       dithering: { ...state.processingParams.dithering, ...params },
     },
+    paramsVersion: state.paramsVersion + 1,
   })),
 
   // Export actions
@@ -183,20 +199,36 @@ export const useAppStore = create<AppState & AppActions>()((set, get) => ({
     const frame = state.frames[state.currentFrameIndex];
     if (!frame) return;
 
+    // Check if this frame was already processed with current params
+    const processedWithVersion = imageCache.processedWithVersion.get(frame.id);
+    if (processedWithVersion === state.paramsVersion && imageCache.processed.has(frame.id)) {
+      // Already processed with current params, no need to reprocess
+      return;
+    }
+
     const original = imageCache.original.get(frame.id);
     if (!original) return;
 
     set({ isProcessing: true });
 
     try {
+      const currentParamsVersion = state.paramsVersion;
       const processed = await processImageAsync({
         imageData: original,
         params: state.processingParams,
         palette: state.palette,
       });
 
-      imageCache.processed.set(frame.id, processed);
-      set(state => ({ isProcessing: false, processedVersion: state.processedVersion + 1 }));
+      // Only cache if params haven't changed during processing
+      const latestState = get();
+      if (latestState.paramsVersion === currentParamsVersion) {
+        imageCache.processed.set(frame.id, processed);
+        imageCache.processedWithVersion.set(frame.id, currentParamsVersion);
+        set(state => ({ isProcessing: false, processedVersion: state.processedVersion + 1 }));
+      } else {
+        // Params changed during processing, result is stale
+        set({ isProcessing: false });
+      }
     } catch (error) {
       if ((error as Error).message !== 'Processing cancelled') {
         console.error('Processing failed:', error);
@@ -215,6 +247,13 @@ export const useAppStore = create<AppState & AppActions>()((set, get) => ({
         if (!original) continue;
 
         const currentState = get();
+        
+        // Check if already processed with current params
+        const processedWithVersion = imageCache.processedWithVersion.get(frame.id);
+        if (processedWithVersion === currentState.paramsVersion && imageCache.processed.has(frame.id)) {
+          continue; // Skip, already processed
+        }
+
         const processed = await processImageAsync({
           imageData: original,
           params: currentState.processingParams,
@@ -222,6 +261,7 @@ export const useAppStore = create<AppState & AppActions>()((set, get) => ({
         });
 
         imageCache.processed.set(frame.id, processed);
+        imageCache.processedWithVersion.set(frame.id, currentState.paramsVersion);
       }
       set(state => ({ processedVersion: state.processedVersion + 1 }));
     } catch (error) {

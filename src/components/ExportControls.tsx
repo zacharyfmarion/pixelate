@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { saveAs } from 'file-saver';
 import { useAppStore } from '../store/appStore';
 import { Button, Select, Slider, Toggle } from './ui';
-import { exportToGif, exportToZip } from '../lib/export';
+import { exportToGif, exportToPng } from '../lib/export';
 
 export function ExportControls() {
   const frames = useAppStore((s) => s.frames);
@@ -15,6 +15,10 @@ export function ExportControls() {
   const processAllFrames = useAppStore((s) => s.processAllFrames);
   const getOriginalImageData = useAppStore((s) => s.getOriginalImageData);
   const getProcessedImageData = useAppStore((s) => s.getProcessedImageData);
+  const processingParams = useAppStore((s) => s.processingParams);
+  
+  const blockSize = processingParams.pixelation.blockSize;
+  const pixelationEnabled = processingParams.pixelation.enabled;
 
   const handleExport = useCallback(async () => {
     if (frames.length === 0) return;
@@ -34,13 +38,17 @@ export function ExportControls() {
           onProgress: setExportProgress,
           getProcessedImageData,
           getOriginalImageData,
+          exportAtPixelSize: exportSettings.exportAtPixelSize,
+          blockSize,
         });
         saveAs(blob, 'pixelated.gif');
       } else {
-        await exportToZip(frames, {
+        await exportToPng(frames, {
           onProgress: setExportProgress,
           getProcessedImageData,
           getOriginalImageData,
+          exportAtPixelSize: exportSettings.exportAtPixelSize,
+          blockSize,
         });
       }
     } catch (error) {
@@ -49,7 +57,7 @@ export function ExportControls() {
       setIsExporting(false);
       setExportProgress(0);
     }
-  }, [frames, exportSettings, processAllFrames, setIsExporting, setExportProgress, getProcessedImageData, getOriginalImageData]);
+  }, [frames, exportSettings, processAllFrames, setIsExporting, setExportProgress, getProcessedImageData, getOriginalImageData, blockSize]);
 
   if (frames.length === 0) {
     return null;
@@ -57,16 +65,16 @@ export function ExportControls() {
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-medium text-gray-200">Export</h3>
+      <h3 className="text-xs text-[#7c6f9b] uppercase tracking-widest border-b border-[#3d3d5c] pb-1">› Export</h3>
 
       <Select
         label="Format"
         value={exportSettings.format}
         options={[
-          { value: 'gif', label: 'Animated GIF' },
-          { value: 'zip', label: 'ZIP of PNGs' },
+          { value: 'gif', label: frames.length === 1 ? 'GIF' : 'Animated GIF' },
+          { value: 'png', label: frames.length === 1 ? 'PNG' : 'ZIP of PNGs' },
         ]}
-        onChange={(value) => updateExportSettings({ format: value as 'gif' | 'zip' })}
+        onChange={(value) => updateExportSettings({ format: value as 'gif' | 'png' })}
       />
 
       {exportSettings.format === 'gif' && (
@@ -97,6 +105,14 @@ export function ExportControls() {
         </>
       )}
 
+      {pixelationEnabled && blockSize > 1 && (
+        <Toggle
+          label="Export at pixel size"
+          checked={exportSettings.exportAtPixelSize}
+          onChange={(exportAtPixelSize) => updateExportSettings({ exportAtPixelSize })}
+        />
+      )}
+
       <Button
         onClick={handleExport}
         disabled={isExporting}
@@ -104,22 +120,7 @@ export function ExportControls() {
       >
         {isExporting ? (
           <span className="flex items-center gap-2">
-            <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-                fill="none"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              />
-            </svg>
+            <span className="pixel-blink">◌</span>
             {Math.round(exportProgress * 100)}%
           </span>
         ) : (

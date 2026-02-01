@@ -18,9 +18,11 @@ function App() {
     <div className="h-full flex flex-col overflow-hidden">
       <ProcessingIndicator />
       {/* Header */}
-      <header className="flex-shrink-0 px-4 py-3 border-b border-gray-800 bg-gray-900">
-        <h1 className="text-lg font-semibold text-gray-100">Pixelate</h1>
-        <p className="text-xs text-gray-500">
+      <header className="flex-shrink-0 px-4 py-3 border-b-2 border-[#3d3d5c] bg-[#1a1a2e]">
+        <h1 className="text-xl text-[#a89cc8] uppercase tracking-widest">
+          ✦ Pixelate ✦
+        </h1>
+        <p className="text-xs text-[#5c5c8a] uppercase tracking-wider">
           Apply pixelation, dithering, and color palette effects
         </p>
       </header>
@@ -28,27 +30,27 @@ function App() {
       {/* Main content */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left sidebar */}
-        <aside className="w-72 flex-shrink-0 border-r border-gray-800 bg-gray-900 overflow-y-auto">
+        <aside className="w-72 flex-shrink-0 border-r-2 border-[#3d3d5c] bg-[#1a1a2e] overflow-y-auto">
           <div className="p-4 space-y-6">
             <section>
-              <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">
-                Images
+              <h2 className="text-xs text-[#7c6f9b] uppercase tracking-widest mb-3 border-b border-[#3d3d5c] pb-1">
+                › Images
               </h2>
               <ImageUploader />
             </section>
 
             <section>
-              <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">
-                Color Palette
+              <h2 className="text-xs text-[#7c6f9b] uppercase tracking-widest mb-3 border-b border-[#3d3d5c] pb-1">
+                › Color Palette
               </h2>
               <div className="space-y-4">
                 <PresetPalettes />
                 <div className="relative">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-700" />
+                    <div className="w-full border-t-2 border-dashed border-[#3d3d5c]" />
                   </div>
                   <div className="relative flex justify-center">
-                    <span className="px-2 bg-gray-900 text-xs text-gray-500">or upload</span>
+                    <span className="px-2 bg-[#1a1a2e] text-xs text-[#5c5c8a]">or upload</span>
                   </div>
                 </div>
                 <ColorStripUploader />
@@ -61,16 +63,16 @@ function App() {
         </aside>
 
         {/* Canvas area */}
-        <main className="flex-1 flex flex-col p-4 overflow-hidden">
+        <main className="flex-1 flex flex-col p-4 overflow-hidden bg-[#0a0a12]">
           <PreviewCanvas />
         </main>
 
         {/* Right sidebar */}
-        <aside className="w-72 flex-shrink-0 border-l border-gray-800 bg-gray-900 overflow-y-auto">
+        <aside className="w-72 flex-shrink-0 border-l-2 border-[#3d3d5c] bg-[#1a1a2e] overflow-y-auto">
           <div className="p-4 space-y-6">
             <section>
-              <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">
-                Effects
+              <h2 className="text-xs text-[#7c6f9b] uppercase tracking-widest mb-3 border-b border-[#3d3d5c] pb-1">
+                › Effects
               </h2>
               <div className="space-y-6">
                 <AdjustmentsControls />

@@ -34,8 +34,10 @@ export interface ProcessingParams {
 }
 
 export interface ExportSettings {
-  format: 'gif' | 'zip';
+  format: 'gif' | 'png';
   gifDelay: number;
   gifLoop: boolean;
   quality: number;
+  /** When true, export at pixel-art size (1 visual pixel = 1 actual pixel) */
+  exportAtPixelSize: boolean;
 }

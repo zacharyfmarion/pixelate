@@ -1,2 +1,2 @@
 export { exportToGif } from './gifExporter';
-export { exportToZip } from './zipExporter';
+export { exportToPng } from './pngExporter';

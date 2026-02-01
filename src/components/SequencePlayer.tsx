@@ -35,8 +35,8 @@ export function SequencePlayer() {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-gray-200">Sequence</h3>
+      <div className="flex items-center justify-between border-b border-[#3d3d5c] pb-1">
+        <h3 className="text-xs text-[#7c6f9b] uppercase tracking-widest">› Sequence</h3>
         <Button variant="ghost" size="sm" onClick={clearFrames}>
           Clear All
         </Button>
@@ -46,16 +46,12 @@ export function SequencePlayer() {
         {frames.length > 1 && (
           <button
             onClick={() => setIsPlaying(!isPlaying)}
-            className="p-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors"
+            className="p-2 border-2 border-[#3d3d5c] bg-[#2d2d44] hover:bg-[#3d3d5c] hover:border-[#5c5c8a] transition-all"
           >
             {isPlaying ? (
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-              </svg>
+              <span className="text-[#a89cc8]">▮▮</span>
             ) : (
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z" />
-              </svg>
+              <span className="text-[#a89cc8]">▶</span>
             )}
           </button>
         )}
@@ -92,10 +88,10 @@ export function SequencePlayer() {
           >
             <button
               onClick={() => setCurrentFrame(index)}
-              className={`w-16 h-16 rounded-lg border-2 transition-colors overflow-hidden ${
+              className={`w-16 h-16 border-2 transition-all overflow-hidden ${
                 index === currentFrameIndex
-                  ? 'border-indigo-500'
-                  : 'border-gray-600 hover:border-gray-500'
+                  ? 'border-[#a89cc8] shadow-[2px_2px_0_#5c4a8a]'
+                  : 'border-[#3d3d5c] hover:border-[#5c5c8a]'
               }`}
             >
               <FrameThumbnail frameId={frame.id} version={processedVersion} />
@@ -105,12 +101,10 @@ export function SequencePlayer() {
                 e.stopPropagation();
                 removeFrame(frame.id);
               }}
-              className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute -top-1 -right-1 w-5 h-5 bg-[#a83232] hover:bg-[#c84848] border border-[#ff6b6b] text-[#e8e4d9] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
               title="Remove frame"
             >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              ×
             </button>
           </div>
         ))}
@@ -157,5 +151,5 @@ const FrameThumbnail = memo(function FrameThumbnail({
     ctx.drawImage(tempCanvas, 0, 0, 64, 64);
   }, [frameId, version, getProcessedImageData, getOriginalImageData]);
 
-  return <canvas ref={canvasRef} className="w-full h-full object-cover" />;
+  return <canvas ref={canvasRef} className="w-full h-full object-cover" style={{ imageRendering: 'pixelated' }} />;
 });

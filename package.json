@@ -1,7 +1,22 @@
 {
   "name": "pixelate",
-  "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "A browser-based image processing tool for applying pixelation, dithering, and color palette effects",
+  "author": "Zachary Marion <zacharyfmarion@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zacharyfmarion/pixelate.git"
+  },
+  "keywords": [
+    "pixelate",
+    "pixel-art",
+    "dithering",
+    "image-processing",
+    "color-palette",
+    "react",
+    "typescript"
+  ],
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -36,5 +51,6 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4"
-  }
+  },
+  "packageManager": "yarn@4.9.1+sha512.f95ce356460e05be48d66401c1ae64ef84d163dd689964962c6888a9810865e39097a5e9de748876c2e0bf89b232d583c33982773e9903ae7a76257270986538"
 }

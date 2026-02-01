@@ -1,5 +1,5 @@
 import { useAppStore } from '../store/appStore';
-import { Slider, Toggle, Select } from './ui';
+import { Slider, Toggle, Select, CollapsibleSection } from './ui';
 
 export function DitheringControls() {
   const dithering = useAppStore((s) => s.processingParams.dithering);
@@ -9,16 +9,16 @@ export function DitheringControls() {
 
   if (!hasPalette) {
     return (
-      <div className="space-y-3">
-        <h3 className="text-sm font-medium text-gray-200">Dithering</h3>
-        <p className="text-xs text-gray-500">Upload a color strip to enable dithering</p>
-      </div>
+      <CollapsibleSection title="Dithering">
+        <p className="text-xs text-[#5c5c8a] border border-dashed border-[#3d3d5c] p-2 bg-[#0a0a12]">
+          Upload a color strip to enable dithering
+        </p>
+      </CollapsibleSection>
     );
   }
 
   return (
-    <div className="space-y-3">
-      <h3 className="text-sm font-medium text-gray-200">Dithering</h3>
+    <CollapsibleSection title="Dithering">
       <Toggle
         label="Enable"
         checked={dithering.enabled}
@@ -50,6 +50,6 @@ export function DitheringControls() {
           />
         </>
       )}
-    </div>
+    </CollapsibleSection>
   );
 }

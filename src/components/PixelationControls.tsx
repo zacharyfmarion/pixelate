@@ -1,5 +1,5 @@
 import { useAppStore } from '../store/appStore';
-import { Slider, Toggle } from './ui';
+import { Slider, Toggle, CollapsibleSection } from './ui';
 
 export function PixelationControls() {
   const pixelation = useAppStore((s) => s.processingParams.pixelation);
@@ -7,8 +7,7 @@ export function PixelationControls() {
   const isProcessing = useAppStore((s) => s.isProcessing);
 
   return (
-    <div className="space-y-3">
-      <h3 className="text-sm font-medium text-gray-200">Pixelation</h3>
+    <CollapsibleSection title="Pixelation">
       <Toggle
         label="Enable"
         checked={pixelation.enabled}
@@ -27,6 +26,6 @@ export function PixelationControls() {
           disabled={isProcessing}
         />
       )}
-    </div>
+    </CollapsibleSection>
   );
 }

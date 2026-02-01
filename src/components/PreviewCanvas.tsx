@@ -170,22 +170,10 @@ export function PreviewCanvas() {
 
   if (!currentFrame) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-gray-900 rounded-lg border border-gray-700">
-        <div className="text-gray-500 text-center">
-          <svg
-            className="w-16 h-16 mx-auto mb-3 text-gray-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-            />
-          </svg>
-          <p>Upload an image to get started</p>
+      <div className="flex-1 flex items-center justify-center bg-[#0a0a12] border-2 border-[#3d3d5c]">
+        <div className="text-[#5c5c8a] text-center">
+          <div className="text-4xl mb-3">⬡</div>
+          <p className="uppercase tracking-wider">Upload an image to get started</p>
         </div>
       </div>
     );
@@ -195,28 +183,28 @@ export function PreviewCanvas() {
   const displayHeight = currentFrame.height * effectiveZoom;
 
   return (
-    <div className="flex-1 flex flex-col bg-gray-900 rounded-lg border border-gray-700 overflow-hidden">
+    <div className="flex-1 flex flex-col bg-[#0a0a12] border-2 border-[#3d3d5c] overflow-hidden">
       {/* Header */}
-      <div className="flex-shrink-0 flex items-center justify-between px-3 py-2 border-b border-gray-700 bg-gray-800">
-        <div className="text-sm text-gray-300">
+      <div className="flex-shrink-0 flex items-center justify-between px-3 py-2 border-b-2 border-[#3d3d5c] bg-[#1a1a2e]">
+        <div className="text-sm text-[#b8b4a9]">
           {currentFrame.name}
-          <span className="text-gray-500 ml-2">
-            {currentFrame.width} x {currentFrame.height}
+          <span className="text-[#5c5c8a] ml-2">
+            {currentFrame.width} × {currentFrame.height}
           </span>
         </div>
         <div className="flex items-center gap-2">
           {isProcessing && (
-            <span className="text-xs text-indigo-400 animate-pulse">Processing...</span>
+            <span className="text-xs text-[#a89cc8] pixel-blink uppercase">Processing...</span>
           )}
           <button
             onClick={() => setShowOriginal(!showOriginal)}
-            className={`text-xs px-2 py-1 rounded transition-colors ${
+            className={`text-xs px-3 py-1 border-2 transition-all uppercase tracking-wider ${
               showOriginal
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                ? 'bg-[#5c4a8a] border-[#a89cc8] text-[#e8e4d9]'
+                : 'bg-[#2d2d44] border-[#3d3d5c] text-[#b8b4a9] hover:bg-[#3d3d5c] hover:border-[#5c5c8a]'
             }`}
           >
-            {showOriginal ? 'Original' : 'Processed'}
+            {showOriginal ? '◀ Original' : '▶ Processed'}
           </button>
         </div>
       </div>
@@ -227,7 +215,7 @@ export function PreviewCanvas() {
         className="flex-1 overflow-hidden"
         style={{
           background:
-            'repeating-conic-gradient(#1a1a1a 0% 25%, #222 0% 50%) 50% / 20px 20px',
+            'repeating-conic-gradient(#12121a 0% 25%, #1a1a24 0% 50%) 50% / 16px 16px',
         }}
       >
         {/* Scroll container for panning */}
@@ -247,6 +235,7 @@ export function PreviewCanvas() {
           >
             <canvas
               ref={canvasRef}
+              className="border-2 border-[#3d3d5c] shadow-[4px_4px_0_#0a0a12]"
               style={{
                 width: displayWidth,
                 height: displayHeight,
@@ -259,23 +248,21 @@ export function PreviewCanvas() {
       </div>
 
       {/* Zoom controls */}
-      <div className="flex-shrink-0 flex items-center justify-center gap-1 px-3 py-2 border-t border-gray-700 bg-gray-800">
+      <div className="flex-shrink-0 flex items-center justify-center gap-2 px-3 py-2 border-t-2 border-[#3d3d5c] bg-[#1a1a2e]">
         <button
           onClick={handleZoomOut}
-          className="p-1.5 rounded hover:bg-gray-700 text-gray-400 hover:text-gray-200 transition-colors"
+          className="px-2 py-1 border-2 border-[#3d3d5c] bg-[#2d2d44] hover:bg-[#3d3d5c] hover:border-[#5c5c8a] text-[#b8b4a9] transition-all"
           title="Zoom out"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-          </svg>
+          −
         </button>
 
         <button
           onClick={handleFitToScreen}
-          className={`px-2 py-1 text-xs rounded transition-colors min-w-[60px] ${
+          className={`px-3 py-1 text-xs border-2 transition-all min-w-[70px] uppercase tracking-wider ${
             zoom === FIT_ZOOM
-              ? 'bg-indigo-600 text-white'
-              : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              ? 'bg-[#5c4a8a] border-[#a89cc8] text-[#e8e4d9]'
+              : 'bg-[#2d2d44] border-[#3d3d5c] text-[#b8b4a9] hover:bg-[#3d3d5c] hover:border-[#5c5c8a]'
           }`}
           title="Fit to screen"
         >
@@ -284,20 +271,13 @@ export function PreviewCanvas() {
 
         <button
           onClick={handleZoomIn}
-          className="p-1.5 rounded hover:bg-gray-700 text-gray-400 hover:text-gray-200 transition-colors"
+          className="px-2 py-1 border-2 border-[#3d3d5c] bg-[#2d2d44] hover:bg-[#3d3d5c] hover:border-[#5c5c8a] text-[#b8b4a9] transition-all"
           title="Zoom in"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
+          +
         </button>
 
-        <span className="text-xs text-gray-500 ml-2">Pinch to zoom, scroll to pan</span>
+        <span className="text-xs text-[#5c5c8a] ml-2">Pinch to zoom, scroll to pan</span>
       </div>
     </div>
   );

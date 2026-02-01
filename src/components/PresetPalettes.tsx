@@ -32,8 +32,13 @@ const PRESET_PALETTES: PresetPalette[] = [
 
 export function PresetPalettes() {
   const setPalette = useAppStore((s) => s.setPalette);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>('none');
   const [loading, setLoading] = useState<string | null>(null);
+
+  const clearPalette = () => {
+    setPalette([]);
+    setSelectedId('none');
+  };
 
   const loadPalette = async (preset: PresetPalette) => {
     setLoading(preset.id);
@@ -71,35 +76,46 @@ export function PresetPalettes() {
   };
 
   return (
-    <div className="space-y-2">
-      <label className="text-xs text-gray-400">Preset Palettes</label>
-      <div className="grid grid-cols-1 gap-2">
-        {PRESET_PALETTES.map((preset) => (
-          <button
-            key={preset.id}
-            onClick={() => loadPalette(preset)}
-            disabled={loading !== null}
-            className={`p-2 rounded-lg border transition-colors text-left ${
-              selectedId === preset.id
-                ? 'border-indigo-500 bg-indigo-500/20'
-                : 'border-gray-600 bg-gray-800 hover:border-gray-500 hover:bg-gray-700'
-            } ${loading === preset.id ? 'opacity-50' : ''}`}
-          >
-            <div className="text-xs text-gray-300 mb-1.5">
-              {loading === preset.id ? 'Loading...' : preset.name}
-            </div>
-            <div className="flex h-4 rounded overflow-hidden">
-              {preset.previewColors.map((color, i) => (
-                <div
-                  key={i}
-                  className="flex-1 h-full"
-                  style={{ backgroundColor: color }}
-                />
-              ))}
-            </div>
-          </button>
-        ))}
-      </div>
+    <div className="space-y-1">
+      {/* None option */}
+      <button
+        onClick={clearPalette}
+        className={`w-full px-2 py-1 border-2 transition-all text-left cursor-pointer flex items-center gap-2 ${
+          selectedId === 'none'
+            ? 'border-[#a89cc8] bg-[#5c4a8a]/30'
+            : 'border-[#3d3d5c] bg-[#2d2d44] hover:border-[#5c5c8a]'
+        }`}
+      >
+        <span className="text-xs text-[#b8b4a9] whitespace-nowrap">None</span>
+        <div className="flex-1 h-3 bg-[#1a1a2e] border border-[#3d3d5c]" />
+      </button>
+
+      {/* Preset Palettes */}
+      {PRESET_PALETTES.map((preset) => (
+        <button
+          key={preset.id}
+          onClick={() => loadPalette(preset)}
+          disabled={loading !== null}
+          className={`w-full px-2 py-1 border-2 transition-all text-left cursor-pointer flex items-center gap-2 ${
+            selectedId === preset.id
+              ? 'border-[#a89cc8] bg-[#5c4a8a]/30'
+              : 'border-[#3d3d5c] bg-[#2d2d44] hover:border-[#5c5c8a]'
+          } ${loading === preset.id ? 'opacity-50' : ''}`}
+        >
+          <span className="text-xs text-[#b8b4a9] whitespace-nowrap min-w-[70px]">
+            {loading === preset.id ? '...' : preset.name}
+          </span>
+          <div className="flex flex-1 h-3 overflow-hidden border border-[#3d3d5c]">
+            {preset.previewColors.map((color, i) => (
+              <div
+                key={i}
+                className="flex-1 h-full"
+                style={{ backgroundColor: color }}
+              />
+            ))}
+          </div>
+        </button>
+      ))}
     </div>
   );
 }

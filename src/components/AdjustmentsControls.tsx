@@ -1,5 +1,5 @@
 import { useAppStore } from '../store/appStore';
-import { Slider, Button } from './ui';
+import { Slider, Button, CollapsibleSection } from './ui';
 
 export function AdjustmentsControls() {
   const adjustments = useAppStore((s) => s.processingParams.adjustments);
@@ -14,10 +14,10 @@ export function AdjustmentsControls() {
     adjustments.hue !== 0;
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-gray-200">Adjustments</h3>
-        {hasChanges && (
+    <CollapsibleSection
+      title="Adjustments"
+      headerRight={
+        hasChanges ? (
           <Button
             variant="ghost"
             size="sm"
@@ -26,9 +26,9 @@ export function AdjustmentsControls() {
           >
             Reset
           </Button>
-        )}
-      </div>
-
+        ) : undefined
+      }
+    >
       <Slider
         label="Brightness"
         value={adjustments.brightness}
@@ -72,6 +72,6 @@ export function AdjustmentsControls() {
         valueFormatter={(v) => `${v}°`}
         disabled={isProcessing}
       />
-    </div>
+    </CollapsibleSection>
   );
 }

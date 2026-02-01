@@ -5,8 +5,7 @@ import { cancelProcessing } from '../lib/processing/workerProcessor';
 export function useImageProcessor() {
   const frames = useAppStore((s) => s.frames);
   const currentFrameIndex = useAppStore((s) => s.currentFrameIndex);
-  const processingParams = useAppStore((s) => s.processingParams);
-  const palette = useAppStore((s) => s.palette);
+  const paramsVersion = useAppStore((s) => s.paramsVersion);
   const processCurrentFrame = useAppStore((s) => s.processCurrentFrame);
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -23,8 +22,7 @@ export function useImageProcessor() {
     // Debounce processing to avoid excessive computation
     debounceRef.current = setTimeout(() => {
       if (frames.length > 0) {
-        // processCurrentFrame is async but we don't await it here
-        // The store handles the async flow internally
+        // processCurrentFrame checks internally if reprocessing is needed
         void processCurrentFrame();
       }
     }, 50);
@@ -35,8 +33,7 @@ export function useImageProcessor() {
       }
     };
   }, [
-    processingParams,
-    palette,
+    paramsVersion,
     currentFrameIndex,
     frames.length,
     processCurrentFrame,
